@@ -1,6 +1,5 @@
 # Privacy-Preserving AI Bounty Judge
 
-This repository implements the Ritual Bootcamp 1 assignment: a bounty judge where participants cannot copy public answers during the submission phase. The main implementation is the required EVM-compatible commit-reveal track.
 
 ## What The Assignment Asked For
 
@@ -82,7 +81,6 @@ $env:NEXT_PUBLIC_CONTRACT_ADDRESS="0xDEPLOYED_CONTRACT"
 pnpm dev
 ```
 
-## Three-Wallet Demo Script
 
 The helper script uses three wallets: creator, user1, and user2. It creates a bounty, submits commitments for both users, waits for the commit window, then reveals both answers.
 
@@ -96,7 +94,3 @@ npx hardhat run scripts/threeWalletFlow.ts --network ritual
 ```
 
 For the required track, `judgeAll` records the batch review bytes and does not require a Ritual precompile. The advanced Ritual-native design is documented separately in `ARCHITECTURE.md`.
-
-## Reflection
-
-What should be public in a bounty system is the bounty metadata, reward amount, deadlines, rules, commitments, reveal status, AI review, final winner, and payout transaction. What should stay hidden during the submission phase is the actual answer text and any salt or private reasoning that would let another participant copy the work. After the reveal deadline, valid revealed answers can become public so the judging process is auditable and participants can verify that the winner was selected from legitimate entries. AI should help with scalable comparison, rubric scoring, summarization, and identifying a recommended winner across many submissions. A human should decide the final winner because AI can misunderstand context, hallucinate, or overweight style instead of correctness. Humans should also handle disputes, edge cases, plagiarism accusations, and bounty-rule interpretation that requires accountability beyond a model output.
