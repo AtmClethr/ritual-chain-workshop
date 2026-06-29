@@ -16,7 +16,7 @@ export function BountyDetail({
   isOwner: boolean;
 }) {
   const now = useNow();
-  const status = getBountyStatus(bounty, now / 1000);
+  const status = getBountyStatus(bounty, now);
   const meta = STATUS_META[status];
 
   return (
@@ -47,14 +47,28 @@ export function BountyDetail({
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
           <Stat label="Reward" value={formatReward(bounty.reward)} />
-          <Stat label="Submissions" value={bounty.submissionCount.toString()} />
           <Stat
-            label="Deadline"
+            label="Entries"
+            value={`${bounty.revealedCount.toString()} revealed / ${bounty.entryCount.toString()} committed`}
+          />
+          <Stat
+            label="Commit deadline"
             value={
               <span>
-                {formatTimestamp(bounty.deadline)}
+                {formatTimestamp(bounty.commitDeadline)}
                 <span className="ml-1 text-xs text-zinc-500">
-                  ({formatRelative(bounty.deadline)})
+                  ({formatRelative(bounty.commitDeadline)})
+                </span>
+              </span>
+            }
+          />
+          <Stat
+            label="Reveal deadline"
+            value={
+              <span>
+                {formatTimestamp(bounty.revealDeadline)}
+                <span className="ml-1 text-xs text-zinc-500">
+                  ({formatRelative(bounty.revealDeadline)})
                 </span>
               </span>
             }
@@ -64,7 +78,7 @@ export function BountyDetail({
 
         {bounty.finalized && (
           <div className="rounded-xl bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200 ring-1 ring-inset ring-emerald-500/30">
-            Finalized, winner is submission{" "}
+            Finalized, winner is entry{" "}
             <span className="font-mono font-semibold">#{bounty.winnerIndex.toString()}</span>.
           </div>
         )}

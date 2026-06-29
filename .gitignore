@@ -1,0 +1,5 @@
+# local secrets / deployment outputs
+env.env
+*.env.local
+hardhat/deployment.json
+hardhat/demo-bounty.json

@@ -32,7 +32,7 @@ export function FinalizeWinner({
   isOwner: boolean;
   onFinalized: () => void;
 }) {
-  const count = Number(bounty.submissionCount);
+  const count = Number(bounty.entryCount);
   const recommended = decodeAiReview(bounty.aiReview)?.parsed?.winnerIndex;
 
   // The input is prefilled with the AI recommendation until the owner edits it.
@@ -72,11 +72,11 @@ export function FinalizeWinner({
     <Card>
       <CardHeader
         title="Finalize winner"
-        subtitle="Pays the reward to the chosen submission. Only one winner."
+        subtitle="Pays the reward to the chosen revealed entry. Only one winner."
       />
       <CardBody className="space-y-3">
         <Notice tone="zinc">
-          Only one winner receives the bounty reward (
+          Only one revealed winner receives the bounty reward (
           {formatReward(bounty.reward)}).
         </Notice>
 
@@ -85,7 +85,7 @@ export function FinalizeWinner({
           hint={
             recommended !== undefined
               ? `AI recommends #${recommended}. You decide the final winner.`
-              : `Choose a submission index (0–${Math.max(count - 1, 0)}).`
+              : `Choose a revealed entry index (0–${Math.max(count - 1, 0)}).`
           }
         >
           <Input

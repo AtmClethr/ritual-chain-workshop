@@ -3,7 +3,7 @@
 A workshop-demo frontend for the **Ritual Chain** `SimpleAIBountyJudge` contract.
 
 > Submit answers to a bounty. After the deadline, Ritual AI ranks all
-> submissions. The bounty owner finalizes the winner.
+> valid revealed answers. The bounty owner finalizes the winner.
 
 Built with **Next.js (App Router) · TypeScript · Tailwind CSS · wagmi · viem**.
 
@@ -14,14 +14,14 @@ Built with **Next.js (App Router) · TypeScript · Tailwind CSS · wagmi · viem
 1. A bounty owner **creates a bounty** with a title, rubric, deadline, and reward.
 2. Participants **submit answers** before the deadline.
 3. After the deadline, the owner clicks **Judge All Submissions**.
-4. The frontend gathers all submissions, builds one Ritual LLM request, encodes
+4. The frontend gathers all revealed answers, builds one Ritual LLM request, encodes
    it as `llmInput`, and calls `judgeAll(bountyId, llmInput)`.
 5. The contract stores/emits the **AI review**.
 6. The owner reads the AI review and clicks **Finalize Winner** with the chosen
    `winnerIndex`.
 7. The contract pays the winner.
 
-> AI review is advisory. The bounty owner finalizes the winner. All submissions
+> AI review is advisory. The bounty owner finalizes the winner. Valid revealed answers
 > are judged together after the deadline. Only one winner receives the reward.
 
 ---
@@ -81,7 +81,7 @@ src/
   lib/
     ritualLlm.ts           buildJudgeAllLlmInput() — Ritual LLM request encoder
     aiReview.ts            Decode aiReview bytes + parse judge JSON
-    bounty.ts              Bounty type, status logic, submission gating
+    bounty.ts              Bounty type, status logic, commit/reveal gating
     format.ts              Address/amount/timestamp formatting helpers
   components/               UI primitives + each feature card
 ```
@@ -115,5 +115,5 @@ finalize input is prefilled with the AI's recommended `winnerIndex`.
 - Transaction buttons show clear states and disable while pending.
 - Owner-only actions (Judge / Finalize) only appear for the connected owner.
 - The "recent bounties" list is kept in `localStorage` (no indexer required).
-- Multicall is **not** assumed — submissions are read one-by-one, so it works on
+- Multicall is **not** assumed — entries are read one-by-one and unrevealed entries are skipped, so it works on
   a fresh chain without a deployed multicall contract.

@@ -13,10 +13,16 @@ export function formatReward(wei?: bigint, symbol = "RITUAL"): string {
   return `${formatEther(wei)} ${symbol}`;
 }
 
-/** Unix seconds -> local date string. */
-export function formatTimestamp(unixSeconds?: bigint | number): string {
-  if (unixSeconds === undefined) return "-";
-  const ms = Number(unixSeconds) * 1000;
+/** Convert EVM seconds or Ritual millisecond timestamps to JS milliseconds. */
+export function timestampToMs(timestamp?: bigint | number): number {
+  if (timestamp === undefined) return 0;
+  const value = Number(timestamp);
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return value > 1_000_000_000_000 ? value : value * 1000;
+}
+
+export function formatTimestamp(timestamp?: bigint | number): string {
+  const ms = timestampToMs(timestamp);
   if (!Number.isFinite(ms) || ms <= 0) return "-";
   return new Date(ms).toLocaleString(undefined, {
     dateStyle: "medium",
@@ -25,9 +31,9 @@ export function formatTimestamp(unixSeconds?: bigint | number): string {
 }
 
 /** Compact "in 2h 5m" / "3m ago" style relative label. */
-export function formatRelative(unixSeconds?: bigint | number): string {
-  if (unixSeconds === undefined) return "";
-  const target = Number(unixSeconds) * 1000;
+export function formatRelative(timestamp?: bigint | number): string {
+  if (timestamp === undefined) return "";
+  const target = timestampToMs(timestamp);
   const diffMs = target - Date.now();
   const past = diffMs < 0;
   let s = Math.abs(Math.floor(diffMs / 1000));

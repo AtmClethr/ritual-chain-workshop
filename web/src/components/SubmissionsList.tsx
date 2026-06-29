@@ -24,16 +24,16 @@ export function SubmissionsList({
   return (
     <Card>
       <CardHeader
-        title="Submissions"
-        subtitle="All submissions are judged together after the deadline."
+        title="Entries"
+        subtitle="Commitments are public first. Answers appear only after valid reveal."
         action={<Badge tone="zinc">{count}</Badge>}
       />
       <CardBody className="space-y-3">
         {count === 0 ? (
-          <p className="text-sm text-zinc-500">No submissions yet.</p>
+          <p className="text-sm text-zinc-500">No commitments yet.</p>
         ) : (
           indices.map((i) => (
-            <SubmissionRow
+            <EntryRow
               key={i}
               bountyId={bountyId}
               index={i}
@@ -48,7 +48,7 @@ export function SubmissionsList({
   );
 }
 
-function SubmissionRow({
+function EntryRow({
   bountyId,
   index,
   ranking,
@@ -64,14 +64,16 @@ function SubmissionRow({
   const { data, isLoading } = useReadContract({
     address: contractAddress,
     abi: aiJudgeAbi,
-    functionName: "getSubmission",
+    functionName: "getEntry",
     args: [bountyId, BigInt(index)],
     chainId: ritualChain.id,
     query: { enabled: !!contractAddress },
   });
 
-  const submitter = data?.[0];
-  const answer = data?.[1];
+  const participant = data?.[0];
+  const commitment = data?.[1];
+  const revealed = data?.[2];
+  const answer = data?.[3];
 
   return (
     <div
@@ -87,10 +89,11 @@ function SubmissionRow({
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs text-zinc-500">#{index}</span>
           <span className="font-mono text-sm text-zinc-300">
-            {submitter ? shortenAddress(submitter) : isLoading ? "loading…" : "-"}
+            {participant ? shortenAddress(participant) : isLoading ? "loading…" : "-"}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
+          <Badge tone={revealed ? "green" : "amber"}>{revealed ? "Revealed" : "Committed"}</Badge>
           {ranking ? <Badge tone="zinc">score {ranking.score}</Badge> : null}
           {isWinner ? (
             <Badge tone="green">Winner</Badge>
@@ -100,8 +103,12 @@ function SubmissionRow({
         </div>
       </div>
 
+      <p className="mt-2 break-all font-mono text-xs text-zinc-500">
+        commitment: {commitment ?? (isLoading ? "loading…" : "-")}
+      </p>
+
       <p className="mt-2 whitespace-pre-wrap break-words text-sm text-zinc-200">
-        {answer ?? (isLoading ? "" : "-")}
+        {revealed ? answer : "Answer hidden until reveal."}
       </p>
 
       {ranking?.reason ? (
